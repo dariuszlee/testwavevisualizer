@@ -77,6 +77,8 @@
     <ClCompile Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.cpp">
       <Filter>IGraphics\Drawing</Filter>
     </ClCompile>
+    <ClCompile Include="..\FrequencyVisualizer.cpp" />
+    <ClCompile Include="..\fft.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\TestWaveVisualizer.h" />
@@ -258,6 +260,8 @@
     <ClInclude Include="..\..\iPlug2\IGraphics\ISender.h">
       <Filter>IGraphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\FrequencyVisualizer.h" />
+    <ClInclude Include="..\fft.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">

@@ -1,9 +1,10 @@
 #include "TestWaveVisualizer.h"
 #include "IPlug_include_in_plug_src.h"
 #include "IControls.h"
+#include "fft.h"
 
 TestWaveVisualizer::TestWaveVisualizer(const InstanceInfo& info)
-: Plugin(info, MakeConfig(kNumParams, kNumPresets))
+: Plugin(info, MakeConfig(kNumParams, kNumPresets)), pLastVal(new VisualizerData())
 {
   GetParam(kGain)->InitDouble("Gain", 0., 0., 100.0, 0.01, "%");
 
@@ -17,8 +18,12 @@ TestWaveVisualizer::TestWaveVisualizer(const InstanceInfo& info)
     pGraphics->AttachPanelBackground(COLOR_GRAY);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
-    pGraphics->AttachControl(new ITextControl(b.GetMidVPadded(50), "Hello iPlug 2!", IText(50)));
-    pGraphics->AttachControl(new IVKnobControl(b.GetCentredInside(100).GetVShifted(-100), kGain));
+    pGraphics->AttachControl(new ITextControl(b.GetFromBottom(50), "Hello iPlug 2!", IText(50)));
+    pGraphics->AttachControl(new IVKnobControl(b.GetCentredInside(100).GetHShifted(-250).GetVShifted(250), kGain));
+
+    FrequencyVisualizer* freqVis = new FrequencyVisualizer(b.GetFromTop(500), pGraphics->LoadBitmap("C:\\Users\\dariu\\OneDrive\\Pictures\\DSC_4688.jpg"));
+    pGraphics->AttachControl(freqVis, 
+        kMeter);
   };
 #endif
 }
@@ -34,5 +39,16 @@ void TestWaveVisualizer::ProcessBlock(sample** inputs, sample** outputs, int nFr
       outputs[c][s] = inputs[c][s] * gain;
     }
   }
+
+  std::lock_guard<std::mutex> guard(g_pages_mutex);
+  delete pLastVal;
+  pLastVal = new VisualizerData(nFrames, GetSampleRate(), nChans, fft(inputs, nFrames, nChans));
 }
+
+void TestWaveVisualizer::OnIdle() {
+  std::lock_guard<std::mutex> guard(g_pages_mutex);
+  VisualizerData* toSend = new VisualizerData(*pLastVal);
+  SendControlMsgFromDelegate(kMeter, 0, sizeof(VisualizerData), toSend);
+}
+
 #endif
