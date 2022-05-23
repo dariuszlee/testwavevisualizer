@@ -54,15 +54,17 @@ public:
     IRECT r = mRECT;
     
     g.StartLayer(this, r);
-    /* double maxRange = 8388607; */
+    double lineMax = -200000;
     double maxRange = 1;
     double maxDbfs = 144;
 
-    double lineMax = -200000;
     double nSamples = data.samples / 2;
     double width = r.W() / (double) nSamples;
-    for (int c = 0; c < data.nChans - 1; c++) {
-      for (int k = 0; k < nSamples; k++) {
+    unsigned int c = 0;
+    int chans = data.nChans;
+    while (c < chans - 1) {
+      unsigned int k = 0;
+      while ( k < nSamples) {
 
         double line = 20 * log10(abs(data.sampleDbs[c][k + (int) nSamples].real()) / maxRange);
         double lineRation = (maxDbfs + line) / maxDbfs;
@@ -70,7 +72,9 @@ public:
           lineMax = line;
         }
         g.DrawLine(COLOR_INDIGO, k * width, r.B, k * width, r.B - (lineRation * r.H()), 0, width);
+        ++k;
       }
+      ++c;
     }
 
     std::stringstream ss("");

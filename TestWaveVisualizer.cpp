@@ -4,7 +4,7 @@
 #include "fft.h"
 
 TestWaveVisualizer::TestWaveVisualizer(const InstanceInfo& info)
-: Plugin(info, MakeConfig(kNumParams, kNumPresets)), pLastVal(new VisualizerData())
+: Plugin(info, MakeConfig(kNumParams, kNumPresets)), pLastVal(new VisualizerData()), pSample(0), pThreshold(50)
 {
   GetParam(kGain)->InitDouble("Gain", 0., 0., 100.0, 0.01, "%");
 
@@ -40,9 +40,13 @@ void TestWaveVisualizer::ProcessBlock(sample** inputs, sample** outputs, int nFr
     }
   }
 
-  std::lock_guard<std::mutex> guard(g_pages_mutex);
-  delete pLastVal;
-  pLastVal = new VisualizerData(nFrames, GetSampleRate(), nChans, fft(inputs, nFrames, nChans));
+  if (pSample == pThreshold) {
+    std::lock_guard<std::mutex> guard(g_pages_mutex);
+    delete pLastVal;
+    pLastVal = new VisualizerData(nFrames, GetSampleRate(), nChans, fft(inputs, nFrames, nChans));
+    pSample = 0;
+  }
+  pSample += 1;
 }
 
 void TestWaveVisualizer::OnIdle() {

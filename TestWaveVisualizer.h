@@ -30,5 +30,6 @@ public:
 private:
   VisualizerData* pLastVal;
   std::mutex g_pages_mutex;
-
+  int pSample;
+  int pThreshold;
 };

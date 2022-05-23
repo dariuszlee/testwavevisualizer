@@ -1,0 +1,34 @@
+{
+  "configurations": {
+    "Launch": {
+      "adapter": "vscode-cpptools",
+      "filetypes": [ "cpp", "c", "h" ],
+      "configuration": {
+        "type": "cppdbg",
+        "request": "launch",
+        "stopOnEntry": false,
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "debugOptions": [],
+        "program": "${fileDirname}/output/program.exe",
+        "logging": {
+          "engineLogging": true
+        },
+        "postLaunchCommands": [
+          "dir ../iPlug2/IPlug:../iPlug2/:../iPlug2/IGraphics:../iPlug2/IPlug/APP"
+        ],
+        "MIMode": "gdb",
+        "miDebuggerPath": "/mnt/c/msys64/mingw64/bin/gdb.exe"
+      }
+    },
+    "Attach": {
+      "adapter": "vscode-cpptools",
+      "filetypes": [ "cpp", "c", "objc", "rust" ],
+      "configuration": {
+        "request": "attach",
+        "program": "./output/program.exe",
+        "MIMode": "gdb"
+      }
+    }
+  }
+}
